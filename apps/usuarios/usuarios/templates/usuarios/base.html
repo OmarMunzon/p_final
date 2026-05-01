@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Mi Proyecto{% endblock %} </title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #f0f2f5;
+            color: #1a1a2e;
+            min-height: 100vh;
+        }
+        nav {
+            background: #16213e;
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,.25);
+        }
+        nav .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: .5px; }
+        nav a { color: #a8dadc; text-decoration: none; margin-left: 1rem; font-size: .95rem; }
+        nav a:hover { color: #fff; }
+        .container { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem; }
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,.08);
+        }
+        .card h2 { margin-bottom: 1.5rem; color: #16213e; font-size: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: .4rem; font-size: .9rem; }
+        .form-control {
+            width: 100%;
+            padding: .65rem 1rem;
+            border: 1.5px solid #dde1e7;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color .2s;
+            outline: none;
+        }
+        .form-control:focus { border-color: #457b9d; }
+        .btn {
+            display: inline-block;
+            padding: .7rem 1.8rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, transform .1s;
+        }
+        .btn:active { transform: scale(.98); }
+        .btn-primary { background: #457b9d; color: #fff; }
+        .btn-primary:hover { background: #1d3557; }
+        .btn-danger { background: #e63946; color: #fff; }
+        .btn-danger:hover { background: #c1121f; }
+        .btn-outline { background: transparent; border: 2px solid #457b9d; color: #457b9d; }
+        .btn-outline:hover { background: #457b9d; color: #fff; }
+        .messages { margin-bottom: 1.5rem; }
+        .alert {
+            padding: .85rem 1.2rem;
+            border-radius: 8px;
+            margin-bottom: .6rem;
+            font-size: .95rem;
+        }
+        .alert-success { background: #d4edda; color: #155724; border-left: 4px solid #28a745; }
+        .alert-error { background: #f8d7da; color: #721c24; border-left: 4px solid #dc3545; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border-left: 4px solid #17a2b8; }
+        .errorlist { color: #dc3545; font-size: .85rem; margin-top: .3rem; list-style: none; }
+        .text-center { text-align: center; }
+        .mt-1 { margin-top: .75rem; }
+        .link { color: #457b9d; text-decoration: none; }
+        .link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav>
+        <span class="brand"> </span>
+        <div>
+            {% if user.is_authenticated %}
+                <span>{{ user.get_full_name }}</span>
+                <a href="{% url 'usuarios:dashboard' %}">Dashboard</a>
+                <form method="post" action="{% url 'usuarios:logout' %}" style="display:inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger" style="padding:.35rem 1rem;font-size:.9rem">Salir</button>
+                </form>
+            {% else %}
+                <a href="{% url 'usuarios:login' %}">Ingresar</a>
+                <a href="{% url 'usuarios:registro' %}">Registrarse</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for mensaje in messages %}
+                    <div class="alert alert-{{ mensaje.tags }}">{{ mensaje }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% block contenido %}{% endblock %}
+    </div>
+</body>
+</html>

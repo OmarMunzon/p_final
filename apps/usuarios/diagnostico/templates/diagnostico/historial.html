@@ -1,0 +1,56 @@
+{% extends "diagnostico/base_diagnostico.html" %}
+{% block titulo %}Historial{% endblock %}
+
+{% block contenido %}
+
+<div style="margin-bottom:2rem;">
+  <h1 style="font-family:'Google Sans Display',sans-serif;font-size:1.8rem;font-weight:500;margin-bottom:.4rem;">Historial de diagnósticos</h1>
+  <p style="color:var(--text-muted);font-size:.95rem;">Todos tus resultados anteriores</p>
+</div>
+
+{% if sesiones %}
+  <div style="display:flex;flex-direction:column;gap:10px;">
+    {% for s in sesiones %}
+    <a href="{% url 'diagnostico:resultado' s.pk %}" style="text-decoration:none;">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1.25rem;transition:border-color .15s;cursor:pointer;"
+           onmouseover="this.style.borderColor='rgba(138,180,248,.4)'"
+           onmouseout="this.style.borderColor='var(--border)'">
+
+        <div style="width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+          {% if s.nivel_asignado == 'avanzado' %}background:rgba(129,201,149,.12);
+          {% elif s.nivel_asignado == 'intermedio' %}background:rgba(138,180,248,.12);
+          {% else %}background:rgba(253,214,99,.12);{% endif %}">
+          {% if s.nivel_asignado == 'avanzado' %}🏆{% elif s.nivel_asignado == 'intermedio' %}⚡{% else %}🌱{% endif %}
+        </div>
+
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:.3rem;">
+            <span style="font-size:.95rem;font-weight:500;color:var(--text);text-transform:capitalize;">{{ s.nivel_asignado }}</span>
+            <span class="badge {% if s.nivel_asignado == 'avanzado' %}badge-green{% elif s.nivel_asignado == 'intermedio' %}badge-blue{% else %}badge-yellow{% endif %}" style="font-size:.72rem;">
+              {{ s.porcentaje_acierto }}%
+            </span>
+          </div>
+          <div style="font-size:.8rem;color:var(--text-muted);">
+            {{ s.fecha_inicio|date:"d \d\e F \d\e Y, H:i" }}
+          </div>
+        </div>
+
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:1.1rem;font-weight:500;color:var(--accent);">{{ s.puntaje_total }}</div>
+          <div style="font-size:.75rem;color:var(--text-muted);">de {{ puntaje_maximo }} pts</div>
+        </div>
+
+        <div style="color:var(--text-muted);font-size:1rem;">›</div>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+{% else %}
+  <div style="text-align:center;padding:4rem 2rem;">
+    <div style="font-size:3rem;margin-bottom:1rem;">📋</div>
+    <p style="color:var(--text-muted);margin-bottom:1.5rem;">Todavía no tienes diagnósticos completados.</p>
+    <a href="{% url 'diagnostico:inicio' %}" class="btn btn-primary">Comenzar diagnóstico →</a>
+  </div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends "diagnostico/base_diagnostico.html" %}
+{% block titulo %}Resultado del Diagnóstico{% endblock %}
+
+{% block contenido %}
+
+{% with pct=porcentaje nivel=sesion.nivel_asignado %}
+
+<div style="text-align:center;padding:2rem 0 1.5rem;">
+
+  {% if nivel == 'avanzado' %}
+    <div style="font-size:3rem;margin-bottom:.75rem;">🏆</div>
+    <span class="badge badge-green" style="font-size:.9rem;padding:.4rem 1.2rem;">Nivel Avanzado</span>
+  {% elif nivel == 'intermedio' %}
+    <div style="font-size:3rem;margin-bottom:.75rem;">⚡</div>
+    <span class="badge badge-blue" style="font-size:.9rem;padding:.4rem 1.2rem;">Nivel Intermedio</span>
+  {% else %}
+    <div style="font-size:3rem;margin-bottom:.75rem;">🌱</div>
+    <span class="badge badge-yellow" style="font-size:.9rem;padding:.4rem 1.2rem;">Nivel Principiante</span>
+  {% endif %}
+
+  <h1 style="font-family:'Google Sans Display',sans-serif;font-size:2rem;font-weight:500;margin:1rem 0 .5rem;">
+    Evaluación completada
+  </h1>
+  <p style="color:var(--text-muted);font-size:.95rem;">
+    {{ sesion.fecha_inicio|date:"d \d\e F \d\e Y" }}
+  </p>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:2rem;">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;">
+    <div style="font-size:2rem;font-weight:500;color:var(--accent);">{{ sesion.puntaje_total }}</div>
+    <div style="font-size:.78rem;color:var(--text-muted);margin-top:.25rem;">de {{ puntaje_maximo }} pts</div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;">
+    <div style="font-size:2rem;font-weight:500;color:var(--accent-green);">{{ pct }}%</div>
+    <div style="font-size:.78rem;color:var(--text-muted);margin-top:.25rem;">aciertos</div>
+  </div>
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.5rem;text-align:center;">
+    <div style="font-size:2rem;font-weight:500;color:var(--accent-yellow);">{{ sesion.respuestas_correctas }}/{{ sesion.total_preguntas }}</div>
+    <div style="font-size:.78rem;color:var(--text-muted);margin-top:.25rem;">correctas</div>
+  </div>
+</div>
+
+<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:2rem;">
+  <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);font-size:.9rem;font-weight:500;color:var(--text-muted);letter-spacing:.03em;">
+    DETALLE POR PREGUNTA
+  </div>
+  {% for d in diagnosticos %}
+  <div style="display:flex;align-items:flex-start;gap:14px;padding:1rem 1.5rem;{% if not forloop.last %}border-bottom:1px solid var(--border);{% endif %}">
+    <div style="width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:600;
+      {% if d.es_correcta %}background:rgba(129,201,149,.15);color:var(--accent-green);{% else %}background:rgba(242,139,130,.15);color:var(--accent-red);{% endif %}">
+      {% if d.es_correcta %}✓{% else %}✗{% endif %}
+    </div>
+    <div style="flex:1;min-width:0;">
+      <p style="font-size:.9rem;color:var(--text);margin-bottom:.35rem;line-height:1.5;">{{ d.enunciado }}</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.8rem;">
+        <span style="color:var(--text-muted);">Tu respuesta:
+          <span style="{% if d.es_correcta %}color:var(--accent-green){% else %}color:var(--accent-red){% endif %}">
+            {{ d.respuesta_usuario }}
+          </span>
+        </span>
+        {% if not d.es_correcta %}
+        <span style="color:var(--text-muted);">Correcta: <span style="color:var(--accent-green);">{{ d.respuesta_correcta }}</span></span>
+        {% endif %}
+      </div>
+    </div>
+    <div style="font-size:.85rem;font-weight:500;color:{% if d.es_correcta %}var(--accent-green){% else %}var(--text-muted){% endif %};flex-shrink:0;">
+      +{{ d.puntaje_obtenido }}pts
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;">  
+  <a href="{% url 'diagnostico:historial' %}" class="btn btn-ghost">Ver historial</a>
+  <a href="{% url 'usuarios:dashboard' %}" class="btn btn-primary">Ir al dashboard →</a>
+</div>
+
+{% endwith %}
+{% endblock %}

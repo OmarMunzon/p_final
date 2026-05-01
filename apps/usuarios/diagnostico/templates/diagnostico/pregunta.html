@@ -1,0 +1,77 @@
+{% extends "diagnostico/base_diagnostico.html" %}
+{% block titulo %}Pregunta {{ numero }}{% endblock %}
+
+{% block contenido %}
+
+<div style="margin-bottom:2rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">
+    <span style="font-size:.85rem;color:var(--text-muted);">Pregunta {{ numero }} de {{ total }}</span>
+    <span style="font-size:.85rem;color:var(--text-muted);">{{ progreso }}% completado</span>
+  </div>
+  <div style="height:4px;background:var(--surface2);border-radius:100px;overflow:hidden;">
+    <div style="height:100%;width:{{ progreso }}%;background:linear-gradient(90deg,#8ab4f8,#c084fc);border-radius:100px;transition:width .4s ease;"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;">
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(138,180,248,.12);border:1px solid rgba(138,180,248,.25);display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;color:var(--accent);">{{ numero }}</div>
+    <span class="badge badge-blue">{{ pregunta.categoria|title }}</span>
+    <span style="margin-left:auto;font-size:.82rem;color:var(--text-muted);">{{ pregunta.puntaje }} pts</span>
+  </div>
+
+  <p style="font-size:1.15rem;line-height:1.65;color:var(--text);font-weight:400;">
+    {{ pregunta.enunciado }}
+  </p>
+</div>
+
+<form method="post" id="quiz-form">
+  {% csrf_token %}
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;" id="opciones">
+    {% for opcion in pregunta.opciones %}
+    <label class="opcion-label" style="display:flex;align-items:center;gap:14px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;cursor:pointer;transition:border-color .15s,background .15s;">
+      <input type="radio" name="respuesta" value="{{ opcion }}" style="display:none;" required>
+      <div class="opcion-circulo" style="width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border);flex-shrink:0;transition:border-color .15s,background .15s;display:flex;align-items:center;justify-content:center;"></div>
+      <span style="font-size:.98rem;color:var(--text);">{{ opcion }}</span>
+    </label>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    {% if numero > 1 %}
+    <a href="{% url 'diagnostico:inicio' %}" class="btn btn-ghost" style="font-size:.88rem;">← Cancelar</a>
+    {% else %}
+    <div></div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary" id="btn-siguiente" disabled style="opacity:.4;transition:opacity .2s;">
+      {% if numero == total %}Finalizar evaluación{% else %}Siguiente pregunta{% endif %} →
+    </button>
+  </div>
+</form>
+
+<script>
+  const labels = document.querySelectorAll('.opcion-label');
+  const btn    = document.getElementById('btn-siguiente');
+
+  labels.forEach(label => {
+    label.addEventListener('click', () => {
+      labels.forEach(l => {
+        l.style.borderColor = 'var(--border)';
+        l.style.background  = 'var(--surface)';
+        l.querySelector('.opcion-circulo').style.background  = 'transparent';
+        l.querySelector('.opcion-circulo').style.borderColor = 'var(--border)';
+      });
+      label.style.borderColor = 'var(--accent)';
+      label.style.background  = 'rgba(138,180,248,.06)';
+      const c = label.querySelector('.opcion-circulo');
+      c.style.background  = 'var(--accent)';
+      c.style.borderColor = 'var(--accent)';
+      c.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="#202124"/></svg>';
+      label.querySelector('input').checked = true;
+      btn.disabled = false;
+      btn.style.opacity = '1';
+    });
+  });
+</script>
+{% endblock %}
