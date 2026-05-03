@@ -4,7 +4,7 @@ Proyecto Django estructurado con módulo de usuarios, autenticación y PostgreSQ
 
 ## Requisitos previos
 
-- Python 3.11+
+- Python
 - PostgreSQL 14+
 - pip
 
