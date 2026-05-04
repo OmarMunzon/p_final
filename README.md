@@ -1,6 +1,6 @@
 # Django + PostgreSQL — Proyecto Base
 
-Proyecto Django estructurado con módulo de usuarios, autenticación y PostgreSQL.
+Proyecto - Django estructurado con módulo de usuarios, autenticación y PostgreSQL.
 
 ## Requisitos previos
 
