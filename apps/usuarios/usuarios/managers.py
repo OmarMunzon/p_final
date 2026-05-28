@@ -4,12 +4,21 @@ Manager personalizado para el modelo Usuario.
 
 from django.contrib.auth.models import BaseUserManager
 
+# from .models import Estudiante
+
 
 class UsuarioManager(BaseUserManager):
-    """Manager para el modelo Usuario con email como campo principal."""
+    """Manager que usa email como campo de identificación principal."""
 
-    def create_user(self, email, nombre, apellido, password=None, **extra_fields):
-        """Crea y guarda un usuario normal."""
+    def create_user(
+        self,
+        email,
+        nombre,
+        apellido,
+        password=None,
+        **extra_fields,
+    ):
+        """Crea y guarda un usuario con email y contraseña."""
         if not email:
             raise ValueError("El correo electrónico es obligatorio.")
 
@@ -24,7 +33,14 @@ class UsuarioManager(BaseUserManager):
         usuario.save(using=self._db)
         return usuario
 
-    def create_superuser(self, email, nombre, apellido, password=None, **extra_fields):
+    def create_superuser(
+        self,
+        email,
+        nombre,
+        apellido,
+        password=None,
+        **extra_fields,
+    ):
         """Crea y guarda un superusuario."""
         extra_fields.setdefault("es_staff", True)
         extra_fields.setdefault("is_superuser", True)
@@ -35,4 +51,10 @@ class UsuarioManager(BaseUserManager):
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("El superusuario debe tener is_superuser=True.")
 
-        return self.create_user(email, nombre, apellido, password, **extra_fields)
+        return self.create_user(
+            email,
+            nombre,
+            apellido,
+            password,
+            **extra_fields,
+        )

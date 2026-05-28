@@ -1,0 +1,226 @@
+{% extends "roadmap/base.html" %}
+{% block title %}Mi Roadmap — CodePath{% endblock %}
+
+{% block content %}
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:16px;
+            padding:0 24px;height:56px;background:rgba(6,9,18,0.95);
+            backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);">
+  <div style="font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--g2);
+              display:flex;align-items:center;gap:8px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--g2);
+                box-shadow:0 0 10px var(--g2);animation:pulse 2s infinite;"></div>
+    CodePath
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">
+    {% if xp_profile %}
+      <!-- <span style="color:var(--o);font-size:.82rem;font-weight:700;">🔥 {{ xp_profile.streak_days }}</span>
+      <span style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);
+                   border-radius:100px;padding:5px 12px;font-size:.78rem;font-weight:700;color:var(--y2);">
+        ⚡ {{ xp_profile.total_xp }} XP
+      </span> -->
+    {% endif %}
+    <a href="{% url 'usuarios:dashboard' %}"
+       style="color:var(--muted);font-size:.78rem;font-weight:700;text-decoration:none;
+              border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:5px 12px;
+              transition:all .2s;">
+      Dashboard
+    </a>
+
+    <a href="{% url 'roadmap:progress' %}">Progreso</a>
+  </div>
+</nav>
+
+<!-- HEADER -->
+<div style="padding:40px 40px 20px;display:flex;align-items:flex-start;
+            justify-content:space-between;flex-wrap:wrap;gap:20px;">
+  <div>
+    <h1 style="font-size:1.8rem;font-weight:900;line-height:1.1;">
+      Logica
+      <span style="background:linear-gradient(135deg,#34d399,#60a5fa);
+                   -webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        Computacional
+      </span>
+    </h1>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:6px;">
+      {{ stages.count }} etapas · Progresa a tu ritmo
+    </p>
+  </div>
+
+  <!-- <div style="display:flex;align-items:center;gap:12px;background:var(--bg1);
+              border:1px solid var(--border);border-radius:14px;padding:12px 18px;">
+    <span style="font-size:1.4rem;">📈</span>
+    <div>
+      <div style="font-size:.68rem;font-weight:700;color:var(--muted);
+                  text-transform:uppercase;letter-spacing:.6px;">Progreso general</div>
+      <div style="height:6px;width:160px;background:var(--bg3);border-radius:3px;
+                  margin-top:6px;overflow:hidden;">
+        <div style="height:100%;width:28%;border-radius:3px;
+                    background:linear-gradient(90deg,var(--g),var(--b));"></div>
+      </div>
+    </div>
+    <div style="font-size:.9rem;font-weight:800;color:var(--g2);">28%</div>
+  </div>
+</div> -->
+
+<!-- ROADMAP SCROLL HORIZONTAL -->
+<div style="overflow-x:auto;padding:20px 40px 80px;">
+  <div style="display:flex;align-items:flex-start;min-width:max-content;
+              position:relative;padding-top:10px;" id="track">
+
+    {% for stage in stages %}
+    <div style="display:flex;flex-direction:column;align-items:center;width:210px;
+                position:relative;z-index:1;opacity:0;transform:translateY(20px);
+                transition:opacity .5s ease, transform .5s ease;"
+         class="stage-block"
+         data-delay="{{ forloop.counter0 }}">
+
+      <!-- Línea conectora -->
+      {% if not forloop.last %}
+      <div style="position:absolute;top:40px;left:50%;width:210px;height:4px;z-index:0;
+                  {% with first=stage.lessons.first %}
+                    {% if first.status == 'completed' %}
+                      background:linear-gradient(90deg,#10b981,#34d399);
+                    {% elif first.status == 'available' %}
+                      background:linear-gradient(90deg,#34d399,#1e3a5f);
+                    {% else %}
+                      background:#1a2235;
+                    {% endif %}
+                  {% endwith %}">
+      </div>
+      {% endif %}
+
+      <!-- Nodo de etapa -->
+      <div style="width:80px;height:80px;border-radius:50%;
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:1.8rem;position:relative;z-index:1;
+                  cursor:pointer;border:3px solid;
+                  transition:transform .2s;flex-shrink:0;"
+           onmouseover="this.style.transform='scale(1.08)'"
+           onmouseout="this.style.transform='scale(1)'"
+           {% with first=stage.lessons.first %}
+           style="width:80px;height:80px;border-radius:50%;
+                  display:flex;align-items:center;justify-content:center;
+                  font-size:1.8rem;position:relative;z-index:1;
+                  cursor:pointer;transition:transform .2s;flex-shrink:0;
+                  {% if first.status == 'completed' %}
+                    background:linear-gradient(135deg,#065f46,#10b981);
+                    border:3px solid #34d399;
+                    box-shadow:0 0 0 4px rgba(16,185,129,.15),0 8px 24px rgba(16,185,129,.3);
+                  {% elif first.status == 'available' %}
+                    background:linear-gradient(135deg,#1e40af,#3b82f6);
+                    border:3px solid #60a5fa;
+                    box-shadow:0 0 0 4px rgba(59,130,246,.15),0 8px 24px rgba(59,130,246,.4);
+                  {% else %}
+                    background:linear-gradient(135deg,#111827,#1a2235);
+                    border:3px solid #1a2235;
+                    box-shadow:0 4px 12px rgba(0,0,0,.4);
+                  {% endif %}"
+           {% endwith %}>
+        {% with first=stage.lessons.first %}
+          {% if first.status == 'completed' %}
+            <span style="position:absolute;top:-20px;font-size:1.1rem;">👑</span>
+          {% endif %}
+        {% endwith %}
+        {{ stage.icon }}
+      </div>
+
+      <div style="margin-top:12px;font-size:.82rem;font-weight:700;
+                  text-align:center;color:var(--text);">{{ stage.title }}</div>
+      <div style="font-size:.7rem;color:var(--muted);margin-top:2px;text-align:center;">
+        {{ stage.lessons.count }} lección{{ stage.lessons.count|pluralize:'es' }}
+      </div>
+
+      <!-- Lecciones -->
+      <div style="display:flex;flex-direction:column;gap:10px;
+                  align-items:center;margin-top:18px;">
+        {% for lesson in stage.lessons.all %}
+        <div style="position:relative;">
+
+          <!-- Tooltip -->
+          <div class="tip-{{ stage.pk }}-{{ lesson.pk }}"
+               style="display:none;position:absolute;bottom:calc(100% + 10px);left:50%;
+                      transform:translateX(-50%);background:var(--bg2);
+                      border:1px solid var(--border2);border-radius:14px;
+                      padding:12px 14px;width:170px;z-index:100;
+                      box-shadow:0 12px 32px rgba(0,0,0,.5);">
+            <div style="font-size:.7rem;font-weight:700;color:var(--text);margin-bottom:4px;">
+              {{ lesson.title }}
+            </div>
+            <div style="font-size:.68rem;color:var(--muted);">
+              {{ lesson.exercises.count }} ejercicio{{ lesson.exercises.count|pluralize }}
+            </div>
+            <div style="font-size:.7rem;color:var(--y2);font-weight:700;margin-top:4px;">
+              +{{ lesson.xp_reward }} XP
+            </div>
+          </div>
+
+          <!-- Botón lección -->
+          
+          {% with first_ex=lesson.exercises.first %}
+            {% if lesson.status != 'locked' and first_ex%}
+              <a href="{% url 'roadmap:exercise' first_ex.id %}"
+                onmouseover="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"
+                onmouseout="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='none'"
+                style="width:52px;height:52px;border-radius:50%;
+                        display:flex;align-items:center;justify-content:center;
+                        font-size:.9rem;font-weight:700;text-decoration:none;
+                        border:2px solid;transition:transform .15s;
+                        {% if lesson.status == 'completed' %}
+                          background:#10b981;border-color:#6ee7b7;color:white;
+                          box-shadow:0 4px 12px rgba(16,185,129,.4);
+                        {% else %}
+                          background:#3b82f6;border-color:#93c5fd;color:white;
+                          box-shadow:0 4px 16px rgba(59,130,246,.45);
+                        {% endif %}"
+                onmouseover="this.style.transform='scale(1.15)';document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"
+                onmouseout="this.style.transform='scale(1)';document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='none'">
+                {% if lesson.status == 'completed' %}✓{% else %}▶{% endif %}
+              </a>
+            {% else %}
+              <div onmouseover="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"
+                  onmouseout="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='none'"
+                  style="width:52px;height:52px;border-radius:50%;
+                          display:flex;align-items:center;justify-content:center;
+                          font-size:.9rem;background:var(--bg2);
+                          border:2px solid var(--bg3);color:var(--muted);cursor:not-allowed;">
+                🔒
+              </div>
+            {% endif %}
+          {% endwith %}
+          
+
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+    {% empty %}
+    <div style="color:var(--muted);text-align:center;padding:60px 40px;">
+      <div style="font-size:3rem;margin-bottom:16px;">🗺️</div>
+      <p>No hay etapas todavía.</p>
+      <a href="/admin/roadmap/" style="color:var(--g2);">Agregar desde el admin →</a>
+    </div>
+    {% endfor %}
+
+  </div>
+</div>
+
+<style>
+@keyframes pulse {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:.6;transform:scale(.8);}
+}
+</style>
+
+<script>
+document.querySelectorAll('.stage-block').forEach((el, i) => {
+  setTimeout(() => {
+    el.style.opacity = '1';
+    el.style.transform = 'translateY(0)';
+  }, 150 + i * 120);
+});
+</script>
+
+{% endblock %}

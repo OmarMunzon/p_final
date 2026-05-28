@@ -79,6 +79,6 @@ def vista_dashboard(request):
     """Vista del panel principal (requiere autenticación)."""
     contexto = {
         "titulo": "Dashboard",
-        "usuario": request.user,        
+        "usuario": request.user,
     }
     return render(request, "usuarios/dashboard.html", contexto)

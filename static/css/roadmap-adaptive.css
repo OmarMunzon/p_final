@@ -1,0 +1,312 @@
+/**
+ * CSS Adaptativo por Nivel de Estudiante
+ * Módulo de Aprendizaje - CodePath
+ * 
+ * Este archivo proporciona estilos adicionales que se adaptan
+ * dinámicamente según el nivel del estudiante (1-5)
+ */
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* VARIABLES GLOBALES POR NIVEL */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --level-1-primary: #22c55e;
+  --level-1-secondary: #4ade80;
+  --level-1-light: rgba(34, 197, 94, 0.1);
+  
+  --level-2-primary: #3b82f6;
+  --level-2-secondary: #60a5fa;
+  --level-2-light: rgba(59, 130, 246, 0.1);
+  
+  --level-3-primary: #a855f7;
+  --level-3-secondary: #d8b4fe;
+  --level-3-light: rgba(168, 85, 247, 0.1);
+  
+  --level-4-primary: #f97316;
+  --level-4-secondary: #fb923c;
+  --level-4-light: rgba(249, 115, 22, 0.1);
+  
+  --level-5-primary: #ec4899;
+  --level-5-secondary: #f472b6;
+  --level-5-light: rgba(236, 72, 153, 0.1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* LEVEL 1 - PRINCIPIANTE */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+.level-1 {
+  --current-primary: var(--level-1-primary);
+  --current-secondary: var(--level-1-secondary);
+  --current-light: var(--level-1-light);
+}
+
+.level-1 .hint-container {
+  display: block !important;
+}
+
+.level-1 .test-cases-section {
+  display: block !important;
+}
+
+.level-1 .section-content {
+  border-left-color: var(--level-1-primary);
+  background: var(--level-1-light);
+}
+
+.level-1 .hint-button {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(74, 222, 128, 0.2));
+  border-color: rgba(34, 197, 94, 0.3);
+  color: var(--level-1-secondary);
+}
+
+.level-1 .hint-button:hover {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.4), rgba(74, 222, 128, 0.4));
+  border-color: rgba(34, 197, 94, 0.6);
+}
+
+.level-1 .hint-content {
+  background: rgba(34, 197, 94, 0.08);
+  border-color: rgba(34, 197, 94, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* LEVEL 2 - INTERMEDIO */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+.level-2 {
+  --current-primary: var(--level-2-primary);
+  --current-secondary: var(--level-2-secondary);
+  --current-light: var(--level-2-light);
+}
+
+.level-2 .hint-container {
+  display: block !important;
+}
+
+.level-2 .test-cases-section {
+  display: block !important;
+}
+
+.level-2 .section-content {
+  border-left-color: var(--level-2-primary);
+  background: var(--level-2-light);
+}
+
+.level-2 .hint-button {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(96, 165, 250, 0.2));
+  border-color: rgba(59, 130, 246, 0.3);
+  color: var(--level-2-secondary);
+}
+
+.level-2 .hint-button:hover {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(96, 165, 250, 0.4));
+  border-color: rgba(59, 130, 246, 0.6);
+}
+
+.level-2 .hint-content {
+  background: rgba(59, 130, 246, 0.08);
+  border-color: rgba(59, 130, 246, 0.2);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* LEVEL 3 - AVANZADO */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+.level-3 {
+  --current-primary: var(--level-3-primary);
+  --current-secondary: var(--level-3-secondary);
+  --current-light: var(--level-3-light);
+}
+
+.level-3 .hint-container {
+  display: none !important;
+}
+
+.level-3 .test-cases-section {
+  display: block !important;
+}
+
+.level-3 .section-content {
+  border-left-color: var(--level-3-primary);
+  background: var(--level-3-light);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* LEVEL 4 - EXPERTO */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+.level-4 {
+  --current-primary: var(--level-4-primary);
+  --current-secondary: var(--level-4-secondary);
+  --current-light: var(--level-4-light);
+}
+
+.level-4 .hint-container {
+  display: none !important;
+}
+
+.level-4 .test-cases-section {
+  display: none !important;
+}
+
+.level-4 .section-content {
+  border-left-color: var(--level-4-primary);
+  background: var(--level-4-light);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* LEVEL 5 - MAESTRO */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+.level-5 {
+  --current-primary: var(--level-5-primary);
+  --current-secondary: var(--level-5-secondary);
+  --current-light: var(--level-5-light);
+}
+
+.level-5 .hint-container {
+  display: none !important;
+}
+
+.level-5 .test-cases-section {
+  display: none !important;
+}
+
+.level-5 .section-content {
+  border-left-color: var(--level-5-primary);
+  background: var(--level-5-light);
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* ANIMACIONES Y EFECTOS */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+@keyframes levelUpGlow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 20px rgba(34, 197, 94, 0);
+  }
+}
+
+.level-badge {
+  animation: fadeInScale 0.6s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* RESPONSIVE DESIGN */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+@media (max-width: 1200px) {
+  .container-exercise {
+    grid-template-columns: 1fr;
+  }
+  
+  .panel-right {
+    max-height: 50vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .exercise-title {
+    font-size: 1.3rem;
+  }
+  
+  .section-content {
+    font-size: 0.85rem;
+  }
+  
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .progress-stats {
+    flex-direction: column;
+  }
+  
+  .stat-item {
+    min-width: auto;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* TEMA OSCURO ADICIONAL */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-color-scheme: dark) {
+  .section-content {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  
+  .editor-section {
+    background: rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* ACCESIBILIDAD */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Foco visible para navegación por teclado */
+.btn:focus-visible,
+.hint-button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--level-1-primary);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────── */
+/* SOPORTE PARA TEMAS PERSONALIZADOS */
+/* ─────────────────────────────────────────────────────────────────────── */
+
+/* Si quieres personalizar los colores, sobrescribe estas variables */
+.custom-theme-1 {
+  --level-1-primary: #10b981;
+  --level-2-primary: #3b82f6;
+  --level-3-primary: #8b5cf6;
+  --level-4-primary: #f59e0b;
+  --level-5-primary: #ef4444;
+}
+
+/* Estado deshabilitado con degradación visual */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
+}
+
+/* Hover avanzado para botones */
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px rgba(16, 185, 129, 0.5);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg3);
+  transform: translateX(2px);
+}

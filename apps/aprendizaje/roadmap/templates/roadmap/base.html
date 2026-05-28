@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    <title>{% block title %}CodePath{% endblock %}</title>
+    
+    <!-- Bootstrap CSS (Un solo enlace) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700;900&display=swap');
+
+        :root {
+            --bg0: #060912; --bg1: #0b1020; --bg2: #111827; --bg3: #1a2235;
+            --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.12);
+            --g: #10b981; --g2: #34d399; --b: #3b82f6; --b2: #60a5fa;
+            --y: #f59e0b; --y2: #fbbf24; --r: #ef4444; --r2: #f87171;
+            --p: #8b5cf6; --p2: #a78bfa; --o: #f97316;
+            --text: #f1f5f9; --muted: #64748b;
+            --mono: 'Space Mono', monospace; --sans: 'DM Sans', sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: var(--sans); background: var(--bg0); color: var(--text); min-height: 100vh; }
+        
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+    </style>
+</head>
+<body>
+
+    <!-- Bloque para el contenido dinámico de tus otras páginas -->
+    {% block content %}{% endblock %}
+
+    <!-- Scripts de Bootstrap y jQuery (Al final para mejorar la carga) -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+</body>
+</html>

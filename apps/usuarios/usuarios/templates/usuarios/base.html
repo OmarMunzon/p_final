@@ -24,6 +24,9 @@
         nav .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: .5px; }
         nav a { color: #a8dadc; text-decoration: none; margin-left: 1rem; font-size: .95rem; }
         nav a:hover { color: #fff; }
+        .rol-badge { font-size: .7rem; padding: .2rem .6rem; border-radius: 100px; font-weight: 600; margin-left: .5rem; }
+        .rol-estudiante { background: #457b9d; color: #fff; }
+        .rol-profesor   { background: #2a9d8f; color: #fff; }
         .container { max-width: 900px; margin: 2.5rem auto; padding: 0 1.5rem; }
         .card {
             background: #fff;
@@ -85,6 +88,7 @@
         <div>
             {% if user.is_authenticated %}
                 <span>{{ user.get_full_name }}</span>
+                <span class="rol-badge rol-{{ user.rol }}">{{ user.get_rol_display }}</span>
                 <a href="{% url 'usuarios:dashboard' %}">Dashboard</a>
                 <form method="post" action="{% url 'usuarios:logout' %}" style="display:inline">
                     {% csrf_token %}

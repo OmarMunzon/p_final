@@ -1,0 +1,352 @@
+{% extends "roadmap/base.html" %}
+{% block title %}Mi Progreso — CodePath{% endblock %}
+
+{% block content %}
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:16px;
+            padding:0 24px;height:56px;background:rgba(6,9,18,0.95);
+            backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);">
+  <div style="font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--g2);
+              display:flex;align-items:center;gap:8px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--g2);
+                box-shadow:0 0 10px var(--g2);animation:pulse 2s infinite;"></div>
+    CodePath
+  </div>
+  <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">    
+    <a href="{% url 'roadmap:index' %}"
+       style="color:var(--muted);font-size:.78rem;font-weight:700;text-decoration:none;
+              border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:5px 12px;
+              transition:all .2s;">
+      Aprendizaje
+    </a>
+  </div>
+</nav>
+
+<!-- MAIN CONTAINER -->
+<div style="padding:40px 40px 60px;max-width:1400px;margin:0 auto;">
+
+  <!-- HEADER SECTION -->
+  <div style="margin-bottom:50px;">
+    <h1 style="font-size:1.8rem;font-weight:900;line-height:1.1;margin-bottom:8px;">
+      Mi Progreso
+      <span style="background:linear-gradient(135deg,#34d399,#60a5fa);
+                   -webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+        Personal
+      </span>
+    </h1>
+    <p style="color:var(--muted);font-size:.9rem;">
+      Visualiza tu avance
+    </p>
+  </div>
+
+  <!-- STATS GRID -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-bottom:40px;">
+
+    <!-- Card: Ejercicios Completados -->
+    <div style="background:var(--bg1);border:1px solid var(--border);border-radius:14px;
+                padding:24px;transition:all .3s;cursor:pointer;"
+         onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 10px 30px rgba(52,211,153,0.1)'"
+         onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:2rem;">✅</span>
+        <span style="font-size:.75rem;font-weight:700;color:var(--g2);background:rgba(16,185,129,.1);
+                     border:1px solid rgba(16,185,129,.2);border-radius:8px;padding:4px 10px;">
+          Completados
+        </span>
+      </div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--g2);margin-bottom:6px;">
+        {{ user_progress }}<span style="font-size:1rem;color:var(--muted);">/{{ total_exercises }}</span>
+      </div>
+      
+      {% if total_exercises > 0 %}
+        {% widthratio user_progress total_exercises 100 as progress_pct %}
+      <div style="font-size:.85rem;color:var(--muted);">
+        {{ progress_pct }}% completado
+      </div>
+      <div style="height:4px;width:100%;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden;">
+        <div style="height:100%;background:linear-gradient(90deg,var(--g),var(--g2));
+                    width:{{ progress_pct }}%;
+                    transition:width .5s ease;"></div>
+      </div>
+      {% else %}
+      <div style="font-size:.85rem;color:var(--muted);">
+        0% completado
+      </div>
+      <div style="height:4px;width:100%;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden;">
+        <div style="height:100%;background:linear-gradient(90deg,var(--g),var(--g2));
+                    width:0%;
+                    transition:width .5s ease;"></div>
+      </div>
+      {% endif %}
+      
+    </div>
+
+     <!-- Card: Precisión -->
+    <div style="background:var(--bg1);border:1px solid var(--border);border-radius:14px;
+                padding:24px;transition:all .3s;cursor:pointer;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:2rem;">🎯</span>
+        <span style="font-size:.75rem;font-weight:700;color:var(--b2);background:rgba(59,130,246,.1);
+                     border:1px solid rgba(59,130,246,.2);border-radius:8px;padding:4px 10px;">
+          Precisión
+        </span>
+      </div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--b2);margin-bottom:6px;">
+        {{ accuracy }}%
+      </div>
+      <div style="font-size:.85rem;color:var(--muted);">
+        {% if attempted_exercises > 0 %}
+          Resueltos en 1er intento
+        {% else %}
+          Sin intentos aún
+        {% endif %}
+      </div>
+      <div style="height:4px;width:100%;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden;">
+        <div style="height:100%;background:linear-gradient(90deg,var(--b),var(--b2));
+                    width:{{ accuracy }}%;transition:width .5s ease;"></div>
+      </div>
+    </div>
+
+     <!-- Card: Intentos Realizados -->
+    <div style="background:var(--bg1);border:1px solid var(--border);border-radius:14px;
+                padding:24px;transition:all .3s;cursor:pointer;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:2rem;">🚀</span>
+        <span style="font-size:.75rem;font-weight:700;color:var(--y2);background:rgba(245,158,11,.1);
+                     border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:4px 10px;">
+          Actividad
+        </span>
+      </div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--y2);margin-bottom:6px;">
+        {{ attempted_exercises }}
+      </div>
+      <div style="font-size:.85rem;color:var(--muted);">
+        Ejercicios intentados
+      </div>
+      {% if total_exercises > 0 %}
+        {% widthratio attempted_exercises total_exercises 100 as attempted_pct %}
+      <div style="height:4px;width:100%;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden;">
+        <div style="height:100%;background:linear-gradient(90deg,var(--y),var(--y2));
+                    width:{{ attempted_pct }}%;
+                    transition:width .5s ease;"></div>
+      </div>
+      {% else %}
+      <div style="height:4px;width:100%;background:var(--bg3);border-radius:2px;margin-top:12px;overflow:hidden;">
+        <div style="height:100%;background:linear-gradient(90deg,var(--y),var(--y2));
+                    width:0%;
+                    transition:width .5s ease;"></div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Card: Racha de Días -->
+    <!-- <div style="background:var(--bg1);border:1px solid var(--border);border-radius:14px;
+                padding:24px;transition:all .3s;cursor:pointer;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <span style="font-size:2rem;">🔥</span>
+        <span style="font-size:.75rem;font-weight:700;color:var(--o);background:rgba(249,115,22,.1);
+                     border:1px solid rgba(249,115,22,.2);border-radius:8px;padding:4px 10px;">
+          Racha
+        </span>
+      </div>
+      <div style="font-size:2.2rem;font-weight:900;color:var(--o);margin-bottom:6px;">
+        {% if xp_profile %}
+          {{ xp_profile.streak_days }}
+        {% else %}
+          0
+        {% endif %}
+        <span style="font-size:1rem;color:var(--muted);">días</span>
+      </div>
+      <div style="font-size:.85rem;color:var(--muted);">
+        {% if xp_profile.last_active %}
+          Último acceso: {{ xp_profile.last_active|date:"d/m/Y" }}
+        {% else %}
+          Mantén la racha
+        {% endif %}
+      </div>
+    </div> -->
+</div>
+
+ <!-- PROGRESS BY STAGE/LESSON -->
+  <div style="margin-bottom:50px;">
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:24px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1.2rem;">📚</span>
+      Progreso por Etapa
+    </h2>
+
+    {% for stage in stages %}
+    <div style="margin-bottom:32px;background:var(--bg1);border:1px solid var(--border);
+                border-radius:14px;padding:20px;overflow:hidden;">
+      
+      <!-- Stage Header -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <div>
+          <h3 style="font-size:1.1rem;font-weight:800;margin-bottom:4px;color:var(--text);">
+            <span style="font-size:1.3rem;margin-right:8px;">{{ stage.icon }}</span>{{ stage.title }}
+          </h3>
+          <p style="font-size:.85rem;color:var(--muted);">
+            {% if stage.lessons.count > 0 %}
+              {{ stage.lessons.count }} lecciones
+            {% else %}
+              Sin lecciones
+            {% endif %}
+          </p>
+        </div>
+        <span style="font-size:.8rem;font-weight:700;background:var(--bg3);border-radius:100px;
+                     padding:6px 14px;color:var(--text);">
+          Dificultad: {{ stage.get_difficulty_display }}
+        </span>
+      </div>
+
+      <!-- Lessons List -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;">
+        {% for lesson in stage.lessons.all %}
+        <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:10px;
+                    padding:16px;transition:all .3s;">
+          
+          <!-- Lesson Info -->
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;">
+            <div style="flex:1;">
+              <h4 style="font-size:.95rem;font-weight:700;margin-bottom:4px;color:var(--text);">
+                {{ lesson.title }}
+              </h4>
+              <p style="font-size:.78rem;color:var(--muted);">
+                {{ lesson.total_exercises }} ejercicio{{ lesson.total_exercises|pluralize }}
+              </p>
+            </div>
+            <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:6px;
+                         {% if lesson.status == 'completed' %}
+                           background:rgba(16,185,129,.15);color:var(--g2);
+                         {% elif lesson.status == 'available' %}
+                           background:rgba(59,130,246,.15);color:var(--b2);
+                         {% else %}
+                           background:rgba(100,116,139,.15);color:var(--muted);
+                         {% endif %}">
+              {% if lesson.status == 'completed' %}
+                ✅ Completado
+              {% elif lesson.status == 'available' %}
+                🔓 Disponible
+              {% else %}
+                🔒 Bloqueado
+              {% endif %}
+            </span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="flex:1;height:6px;background:var(--bg3);border-radius:3px;overflow:hidden;">
+              <div style="height:100%;background:linear-gradient(90deg,var(--g),var(--b));
+                          width:{{ lesson.progress_percentage }}%;transition:width .5s ease;"></div>
+            </div>
+            <span style="font-size:.8rem;font-weight:700;color:var(--muted);min-width:50px;text-align:right;">
+              {{ lesson.completed_exercises }}/{{ lesson.total_exercises }}
+            </span>
+          </div>
+
+          <!-- Percentage -->
+          <p style="font-size:.75rem;color:var(--muted);margin-top:8px;">
+            {{ lesson.progress_percentage }}% completado
+          </p>
+
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+
+   <!-- RECENT ACTIVITY -->
+  <div style="margin-bottom:30px;">
+    <h2 style="font-size:1.3rem;font-weight:800;margin-bottom:20px;display:flex;align-items:center;gap:8px;">
+      <span style="font-size:1.2rem;">⏱️</span>
+      Actividad Reciente
+    </h2>
+
+    {% if recent_activity %}
+    <div style="background:var(--bg1);border:1px solid var(--border);border-radius:14px;
+                overflow:hidden;">
+      
+      {% for progress in recent_activity %}
+      <div style="padding:16px 20px;border-bottom:1px solid var(--border2);
+                  display:flex;align-items:center;justify-content:space-between;
+                  transition:background .3s;"
+           onmouseover="this.style.background='var(--bg2)'"
+           onmouseout="this.style.background='transparent'">
+        
+        <div style="flex:1;">
+          <!-- Exercise Info -->
+          <div style="margin-bottom:8px;">
+            <h4 style="font-size:.95rem;font-weight:700;color:var(--text);margin:0;">
+              {{ progress.exercise.title }}
+            </h4>
+            <p style="font-size:.8rem;color:var(--muted);margin:0;">
+              <span style="font-weight:700;">{{ progress.exercise.lesson.stage.title }}</span> 
+              → {{ progress.exercise.lesson.title }}
+            </p>
+          </div>
+          
+          <!-- Stats -->
+          <div style="display:flex;align-items:center;gap:16px;font-size:.78rem;color:var(--muted);">
+            <span>📅 Actualizado: {{ progress.updated_at|date:"d/m/Y H:i" }}</span>
+            <span>🎯 Intentos: {{ progress.attempts }}</span>
+            <span>⏱️ Tiempo: {{ progress.time_spent }}s</span>
+          </div>
+        </div>
+
+        <!-- Status Badge -->
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;">
+          <span style="font-size:.75rem;font-weight:700;padding:6px 12px;border-radius:6px;
+                       {% if progress.solved %}
+                         background:rgba(16,185,129,.15);color:var(--g2);
+                       {% else %}
+                         background:rgba(239,68,68,.15);color:var(--r2);
+                       {% endif %}">
+            {% if progress.solved %}
+              ✅ Resuelto
+            {% else %}
+              ⏳ En progreso
+            {% endif %}
+          </span>
+          {% if progress.xp_earned > 0 %}
+          <span style="font-size:.78rem;font-weight:700;color:var(--y2);">
+            +{{ progress.xp_earned }} XP
+          </span>
+          {% endif %}
+        </div>
+
+      </div>
+      {% endfor %}
+
+    </div>
+    {% else %}
+    <div style="background:var(--bg1);border:1px solid var(--border2);border-radius:14px;
+                padding:40px;text-align:center;">
+      <p style="font-size:2rem;margin-bottom:12px;">📭</p>
+      <p style="font-size:1rem;color:var(--muted);">
+        Aún no hay actividad. ¡Comienza resolviendo ejercicios!
+      </p>
+      <a href="#"
+         style="display:inline-block;margin-top:16px;padding:10px 20px;
+                background:linear-gradient(135deg,var(--g),var(--g2));
+                color:white;border:none;border-radius:8px;font-weight:700;
+                font-size:.9rem;text-decoration:none;transition:all .3s;
+                cursor:pointer;">
+        Ir al Roadmap
+      </a>
+    </div>
+    {% endif %}
+
+  </div>
+
+<!-- ANIMATIONS -->
+<style>
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+</style>
+
+{% endblock %}
