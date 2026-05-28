@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import FormularioLogin, FormularioRegistro
-
+from .models import PerfilEstudiante
 
 def vista_registro(request):
     """Vista para registro de nuevos usuarios."""
@@ -77,8 +77,20 @@ def vista_logout(request):
 @login_required
 def vista_dashboard(request):
     """Vista del panel principal (requiere autenticación)."""
+    estudiante = PerfilEstudiante.objects.filter(usuario=request.user).first()
+    mi_nivel = ""
+    match estudiante.nivel_actual:
+        case 1:
+            mi_nivel = "facil"
+        case 2:
+            mi_nivel = "intermedio"
+        case 3:
+            mi_nivel = "avanzado"
+    
     contexto = {
         "titulo": "Dashboard",
         "usuario": request.user,
+        "estudiante": estudiante,
+        "mi_nivel": mi_nivel,
     }
     return render(request, "usuarios/dashboard.html", contexto)

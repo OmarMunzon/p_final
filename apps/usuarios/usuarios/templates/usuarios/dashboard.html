@@ -9,8 +9,8 @@
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;">
         <div style="background:#f0f4ff;border-radius:10px;padding:1.5rem;border-left:4px solid #457b9d;">
-            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Email</div>
-            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">{{ usuario.email }}</div>
+            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Estudiante</div>
+            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">{{ usuario.nombre }} {{ usuario.apellido }}</div>
         </div>
         <div style="background:#f0fff4;border-radius:10px;padding:1.5rem;border-left:4px solid #28a745;">
             <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Estado</div>
@@ -19,9 +19,9 @@
             </div>
         </div>
         <div style="background:#fff8f0;border-radius:10px;padding:1.5rem;border-left:4px solid #fd7e14;">
-            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Miembro desde</div>
-            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">
-                {{ usuario.fecha_registro|date:"d/m/Y" }}
+            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Nivel</div>
+            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">                
+                  {{ mi_nivel}}
             </div>
         </div>
         {% if usuario.es_staff %}
