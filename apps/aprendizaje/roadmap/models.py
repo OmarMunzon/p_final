@@ -185,3 +185,42 @@ class RoadmapUserXP(models.Model):
 
     def __str__(self):
         return f'{self.user} — {self.total_xp} XP'
+    
+
+#from django.db import models
+#from django.contrib.auth.models import User
+
+class RoadmapLessonProgress(models.Model):
+
+    STATUS_CHOICES = [
+        ('locked',    'Bloqueado'),
+        ('available', 'Disponible'),
+        ('completed', 'Completado'),
+    ]    
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+    )    
+
+    lesson = models.ForeignKey(
+        'RoadmapLesson',
+        on_delete=models.CASCADE
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='locked'
+    )
+
+    completed_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        unique_together = (
+            'user',
+            'lesson'
+        )

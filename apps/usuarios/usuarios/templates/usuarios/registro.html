@@ -30,6 +30,13 @@
         </div>
 
         <div class="form-group">
+            {{ formulario.rol.label_tag }}
+            {{ formulario.rol }}
+            
+            {{ formulario.rol.errors }}
+        </div>
+
+        <div class="form-group">
             {{ formulario.email.label_tag }}
             {{ formulario.email }}
             {% if formulario.email.errors %}
@@ -40,6 +47,7 @@
         </div>
 
         
+
         <div class="form-group">
             {{ formulario.password1.label_tag }}
             <div class="password-wrapper" style="position: relative;">

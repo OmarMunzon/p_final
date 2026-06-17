@@ -23,12 +23,12 @@
     {% endif %}
     <a href="{% url 'usuarios:dashboard' %}"
        style="color:var(--muted);font-size:.78rem;font-weight:700;text-decoration:none;
-              border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:5px 12px;
+              border:1px solid #15f533e3;border-radius:8px;padding:5px 12px;
               transition:all .2s;">
       Dashboard
     </a>
 
-    <a href="{% url 'roadmap:progress' %}">Progreso</a>
+    <a href="{% url 'roadmap:progress' %}">Mi Progreso</a>
   </div>
 </nav>
 
@@ -80,9 +80,9 @@
       {% if not forloop.last %}
       <div style="position:absolute;top:40px;left:50%;width:210px;height:4px;z-index:0;
                   {% with first=stage.lessons.first %}
-                    {% if first.status == 'completed' %}
+                    {% if first.progress.status == 'completed' %}
                       background:linear-gradient(90deg,#10b981,#34d399);
-                    {% elif first.status == 'available' %}
+                    {% elif first.progress.status == 'available' %}
                       background:linear-gradient(90deg,#34d399,#1e3a5f);
                     {% else %}
                       background:#1a2235;
@@ -104,11 +104,11 @@
                   display:flex;align-items:center;justify-content:center;
                   font-size:1.8rem;position:relative;z-index:1;
                   cursor:pointer;transition:transform .2s;flex-shrink:0;
-                  {% if first.status == 'completed' %}
+                  {% if first.progress.status == 'completed' %}
                     background:linear-gradient(135deg,#065f46,#10b981);
                     border:3px solid #34d399;
                     box-shadow:0 0 0 4px rgba(16,185,129,.15),0 8px 24px rgba(16,185,129,.3);
-                  {% elif first.status == 'available' %}
+                  {% elif first.progress.status == 'available' %}
                     background:linear-gradient(135deg,#1e40af,#3b82f6);
                     border:3px solid #60a5fa;
                     box-shadow:0 0 0 4px rgba(59,130,246,.15),0 8px 24px rgba(59,130,246,.4);
@@ -119,7 +119,7 @@
                   {% endif %}"
            {% endwith %}>
         {% with first=stage.lessons.first %}
-          {% if first.status == 'completed' %}
+          {% if first.progress.status == 'completed' %}
             <span style="position:absolute;top:-20px;font-size:1.1rem;">👑</span>
           {% endif %}
         {% endwith %}
@@ -159,7 +159,7 @@
           <!-- Botón lección -->
           
           {% with first_ex=lesson.exercises.first %}
-            {% if lesson.status != 'locked' and first_ex%}
+            {% if lesson.progress.status != 'locked' and first_ex %}
               <a href="{% url 'roadmap:exercise' first_ex.id %}"
                 onmouseover="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"
                 onmouseout="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='none'"
@@ -167,7 +167,7 @@
                         display:flex;align-items:center;justify-content:center;
                         font-size:.9rem;font-weight:700;text-decoration:none;
                         border:2px solid;transition:transform .15s;
-                        {% if lesson.status == 'completed' %}
+                        {% if lesson.progress.status == 'completed' %}
                           background:#10b981;border-color:#6ee7b7;color:white;
                           box-shadow:0 4px 12px rgba(16,185,129,.4);
                         {% else %}
@@ -176,7 +176,7 @@
                         {% endif %}"
                 onmouseover="this.style.transform='scale(1.15)';document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"
                 onmouseout="this.style.transform='scale(1)';document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='none'">
-                {% if lesson.status == 'completed' %}✓{% else %}▶{% endif %}
+                {% if lesson.progress.status == 'completed' %}✓{% else %}▶{% endif %}
               </a>
             {% else %}
               <div onmouseover="document.querySelector('.tip-{{ stage.pk }}-{{ lesson.pk }}').style.display='block'"

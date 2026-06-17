@@ -12,6 +12,16 @@ from .models import Usuario
 class FormularioRegistro(UserCreationForm):
     """Formulario para registro de nuevos usuarios."""
 
+    rol = forms.ChoiceField(
+        label="Rol",
+        choices=Usuario.ROLES,
+        widget=forms.Select(
+            attrs={
+                "class": "form-control",
+            }
+        ),
+    )
+
     email = forms.EmailField(
         label="Correo electrónico",
         widget=forms.EmailInput(
@@ -59,10 +69,18 @@ class FormularioRegistro(UserCreationForm):
             }
         ),
     )
+    
 
     class Meta:
         model = Usuario
-        fields = ("email", "nombre", "apellido", "password1", "password2")
+        fields = (
+            "email", 
+            "nombre", 
+            "apellido", 
+            "rol",
+            "password1", 
+            "password2",
+        )
 
     def clean_email(self):
         """Valida que el email no esté registrado."""

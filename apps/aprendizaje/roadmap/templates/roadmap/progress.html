@@ -15,7 +15,7 @@
   <div style="margin-left:auto;display:flex;align-items:center;gap:12px;">    
     <a href="{% url 'roadmap:index' %}"
        style="color:var(--muted);font-size:.78rem;font-weight:700;text-decoration:none;
-              border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:5px 12px;
+              border:1px solid hwb(123 6% 8% / 0.849);border-radius:8px;padding:5px 12px;
               transition:all .2s;">
       Aprendizaje
     </a>
@@ -215,20 +215,22 @@
               </p>
             </div>
             <span style="font-size:.75rem;font-weight:700;padding:4px 10px;border-radius:6px;
-                         {% if lesson.status == 'completed' %}
-                           background:rgba(16,185,129,.15);color:var(--g2);
-                         {% elif lesson.status == 'available' %}
-                           background:rgba(59,130,246,.15);color:var(--b2);
-                         {% else %}
-                           background:rgba(100,116,139,.15);color:var(--muted);
-                         {% endif %}">
-              {% if lesson.status == 'completed' %}
+                  {% if lesson.progress.status == 'completed' %}
+                    background:rgba(16,185,129,.15);color:var(--g2);
+                  {% elif lesson.progress.status == 'available' %}
+                    background:rgba(59,130,246,.15);color:var(--b2);
+                  {% else %}
+                    background:rgba(100,116,139,.15);color:var(--muted);
+                  {% endif %}">
+
+              {% if lesson.progress.status == 'completed' %}
                 ✅ Completado
-              {% elif lesson.status == 'available' %}
+              {% elif lesson.progress.status == 'available' %}
                 🔓 Disponible
               {% else %}
                 🔒 Bloqueado
               {% endif %}
+
             </span>
           </div>
 

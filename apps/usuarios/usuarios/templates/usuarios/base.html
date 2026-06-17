@@ -89,7 +89,7 @@
             {% if user.is_authenticated %}
                 <span>{{ user.get_full_name }}</span>
                 <span class="rol-badge rol-{{ user.rol }}">{{ user.get_rol_display }}</span>
-                <a href="{% url 'usuarios:dashboard' %}">Dashboard</a>
+                <!-- <a href="{% url 'usuarios:dashboard' %}">Dashboard</a> -->
                 <form method="post" action="{% url 'usuarios:logout' %}" style="display:inline">
                     {% csrf_token %}
                     <button type="submit" class="btn btn-danger" style="padding:.35rem 1rem;font-size:.9rem">Salir</button>

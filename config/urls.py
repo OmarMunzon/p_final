@@ -16,4 +16,8 @@ urlpatterns = [
         'aprendizaje/',
         include('apps.aprendizaje.roadmap.urls', namespace='roadmap'),
     ),
+    path(                                          # ← esto es nuevo
+        'seguimiento/',
+        include('apps.seguimiento.urls', namespace='seguimiento'),
+    ),
 ]

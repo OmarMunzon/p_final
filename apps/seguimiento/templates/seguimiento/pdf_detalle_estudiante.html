@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+
+<style>
+
+body{
+    font-family: Helvetica;
+    font-size:11px;
+}
+
+h1{
+    text-align:center;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+}
+
+th{
+    background:#d9d9d9;
+    border:1px solid black;
+    padding:6px;
+}
+
+td{
+    border:1px solid black;
+    padding:5px;
+}
+
+.section{
+    margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+Detalle del Estudiante
+</h1>
+
+<div class="section">
+
+<p>
+<strong>Nombre:</strong>
+{{ estudiante.nombre }}
+{{ estudiante.apellido }}
+</p>
+
+<p>
+<strong>Email:</strong>
+{{ estudiante.email }}
+</p>
+
+<p>
+<strong>Rol:</strong>
+{{ estudiante.rol }}
+</p>
+
+<p>
+<strong>Nivel:</strong>
+
+{% if perfil %}
+
+    {% if perfil.nivel_actual == 1 %}
+        Principiante
+    {% elif perfil.nivel_actual == 2 %}
+        Intermedio
+    {% elif perfil.nivel_actual == 3 %}
+        Avanzado
+    {% else %}
+        No definido
+    {% endif %}
+
+{% else %}
+    Sin diagnóstico
+{% endif %}
+
+</p>
+
+<p>
+<strong>Última Actividad:</strong>
+
+{% if ultima_actividad %}
+    {{ ultima_actividad|date:"d/m/Y H:i" }}
+{% else %}
+    Sin actividad
+{% endif %}
+
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>Estadísticas</h2>
+
+<p>
+<strong>Ejercicios Resueltos:</strong>
+{{ ejercicios_resueltos }}
+</p>
+
+<p>
+<strong>Ejercicios Pendientes:</strong>
+{{ ejercicios_pendientes }}
+</p>
+
+<p>
+<strong>Total Intentos:</strong>
+{{ total_intentos }}
+</p>
+
+<p>
+<strong>Precisión:</strong>
+{{ precision }}%
+</p>
+
+</div>
+
+<div class="section">
+
+<h2>Actividad Reciente</h2>
+
+<table>
+
+<thead>
+
+<tr>
+    <th>Ejercicio</th>
+    <th>Intentos</th>
+    <th>Estado</th>
+    <th>Fecha</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for progreso in progresos %}
+
+<tr>
+
+<td>
+{{ progreso.exercise.title }}
+</td>
+
+<td>
+{{ progreso.attempts }}
+</td>
+
+<td>
+
+{% if progreso.solved %}
+Resuelto
+{% else %}
+En progreso
+{% endif %}
+
+</td>
+
+<td>
+{{ progreso.updated_at|date:"d/m/Y H:i" }}
+</td>
+
+</tr>
+
+{% empty %}
+
+<tr>
+<td colspan="4">
+No existen actividades registradas.
+</td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+</body>
+</html>

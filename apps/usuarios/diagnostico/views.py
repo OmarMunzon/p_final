@@ -92,10 +92,17 @@ def vista_pregunta(request, numero):
             sesion.completado = True
             sesion.save()
 
-            # Actualizar el perfil del estudiante/usuario
-            # perfilEstudiante = request.session.get("perfil_estudiante")
-            # perfilEstudiante.nivel_actual = max(perfilEstudiante.nivel_actual, sesion.nivel_asignado)
-            # perfilEstudiante.save()
+            #actualiza nivel de estudiante
+            perfil = PerfilEstudiante.objects.get(usuario=request.user)
+
+            if sesion.nivel_asignado == "principiante":
+                perfil.nivel_actual = 1
+            elif sesion.nivel_asignado == "intermedio":
+                perfil.nivel_actual = 2
+            elif sesion.nivel_asignado == "avanzado":
+                perfil.nivel_actual = 3
+
+            perfil.save()
 
             if "sesion_diagnostico_id" in request.session:
                 del request.session["sesion_diagnostico_id"]

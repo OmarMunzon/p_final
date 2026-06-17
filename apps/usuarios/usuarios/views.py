@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from .forms import FormularioLogin, FormularioRegistro
-from .models import PerfilEstudiante
+from .models import PerfilEstudiante, PerfilProfesor
 
 def vista_registro(request):
     """Vista para registro de nuevos usuarios."""
@@ -19,6 +19,7 @@ def vista_registro(request):
         formulario = FormularioRegistro(request.POST)
         if formulario.is_valid():
             usuario = formulario.save()
+            print("resultado ",usuario)
             login(request, usuario)
             messages.success(
                 request,
@@ -76,21 +77,40 @@ def vista_logout(request):
 
 @login_required
 def vista_dashboard(request):
-    """Vista del panel principal (requiere autenticación)."""
-    estudiante = PerfilEstudiante.objects.filter(usuario=request.user).first()
-    mi_nivel = ""
-    match estudiante.nivel_actual:
-        case 1:
-            mi_nivel = "facil"
-        case 2:
-            mi_nivel = "intermedio"
-        case 3:
-            mi_nivel = "avanzado"
-    
+    """Vista del panel principal adaptada a Estudiantes y Profesores."""
+    usuario = request.user
     contexto = {
         "titulo": "Dashboard",
-        "usuario": request.user,
-        "estudiante": estudiante,
-        "mi_nivel": mi_nivel,
+        "usuario": usuario,
     }
-    return render(request, "usuarios/dashboard.html", contexto)
+
+    # 1. SI ES ESTUDIANTE
+    if usuario.rol == 'estudiante':
+        estudiante = PerfilEstudiante.objects.filter(usuario=usuario).first()
+        mi_nivel = "principiante"
+        
+        if estudiante:
+            match estudiante.nivel_actual:
+                case 1: mi_nivel = "principiante"
+                case 2: mi_nivel = "intermedio"
+                case 3: mi_nivel = "avanzado"
+                
+        contexto.update({
+            "estudiante": estudiante,
+            "mi_nivel": mi_nivel,
+        })
+        return render(request, "usuarios/dashboard.html", contexto)
+
+    # 2. SI ES PROFESOR
+    elif usuario.rol == 'profesor':
+        profesor = PerfilProfesor.objects.filter(usuario=usuario).first()
+        
+        contexto.update({
+            "profesor": profesor,
+        })
+        return render(request, "usuarios/dashboard.html", contexto)
+        
+    # 3. CASO DE EMERGENCIA (Por si creas un usuario desde el admin sin rol)
+    else:
+        messages.error(request, "Tu cuenta no tiene un rol asignado.")
+        return redirect("usuarios:login")

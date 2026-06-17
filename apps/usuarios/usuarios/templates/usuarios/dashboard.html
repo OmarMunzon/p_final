@@ -3,48 +3,59 @@
 {% block titulo %}Dashboard{% endblock %}
 
 {% block contenido %}
-<div class="card">
+<div class="card">    
     <h2>Bienvenido, {{ usuario.get_full_name }}</h2>
-    <p style="color:#555;margin-bottom:2rem;">Panel principal de tu cuenta.</p>
+    <p style="color:#555;margin-bottom:2rem;">Panel principal de tu cuenta ({{ usuario.get_rol_display }}).</p>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;">
+        
         <div style="background:#f0f4ff;border-radius:10px;padding:1.5rem;border-left:4px solid #457b9d;">
-            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Estudiante</div>
-            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">{{ usuario.nombre }} {{ usuario.apellido }}</div>
+            <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Usuario</div>
+            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">{{ usuario.get_full_name }}</div>
         </div>
+
         <div style="background:#f0fff4;border-radius:10px;padding:1.5rem;border-left:4px solid #28a745;">
             <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Estado</div>
             <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">
-                {% if usuario.es_activo %}✅ Activo{% else %}❌ Inactivo{% endif %}
+                {% if usuario.is_active %}✅ Activo{% else %}❌ Inactivo{% endif %}
             </div>
         </div>
+
+        {% if usuario.rol == 'estudiante' %}
         <div style="background:#fff8f0;border-radius:10px;padding:1.5rem;border-left:4px solid #fd7e14;">
             <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Nivel</div>
-            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">                
-                  {{ mi_nivel}}
+            <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem; text-transform: capitalize;">                 
+                 {{ mi_nivel }}
             </div>
         </div>
-        {% if usuario.es_staff %}
+        {% endif %}
+
+        {% if usuario.is_staff %}
         <div style="background:#fff0f8;border-radius:10px;padding:1.5rem;border-left:4px solid #e83e8c;">
             <div style="font-size:.85rem;color:#666;text-transform:uppercase;letter-spacing:.5px;">Rol</div>
             <div style="font-size:1.05rem;font-weight:600;margin-top:.3rem;">⚙️ Administrador</div>
         </div>
         {% endif %}
-
-        
-        <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
-            <a href="{% url 'diagnostico:inicio' %}" style="display:inline-block;background:#457b9d;color:white;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;transition:background 0.3s;">
-                Diagnostico Inicial
-            </a>
-        </div>
-
-        <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
-            <a href="{% url 'roadmap:index' %}" style="display:inline-block;background:#62b94c;color:white;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;transition:background 0.3s;">
-                Aprendizaje Personalizado
-            </a>
-        </div>
-        
     </div>
+
+    {% if usuario.rol == 'estudiante' %}
+    <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+        <a href="{% url 'diagnostico:inicio' %}" style="display:inline-block;background:#457b9d;color:white;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;transition:background 0.3s;">
+            Diagnóstico Inicial
+        </a>
+        <a href="{% url 'roadmap:index' %}" style="display:inline-block;background:#62b94c;color:white;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;transition:background 0.3s;">
+            Aprendizaje Personalizado
+        </a>
+    </div>
+    {% endif %}
+
+    {% if usuario.rol == 'profesor' %}
+    <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+        <a href="{% url 'seguimiento:index' %}" style="display:inline-block;background:#6c757d;color:white;padding:0.75rem 1.5rem;border-radius:8px;text-decoration:none;font-weight:600;">
+            Ver mis Alumnos
+        </a>
+    </div>
+    {% endif %}
 
 </div>
 {% endblock %}

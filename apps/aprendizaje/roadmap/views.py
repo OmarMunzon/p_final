@@ -18,7 +18,7 @@ from .evaluator import (
 from .judge0 import run_code
 from .models import (
     RoadmapExercise, RoadmapLesson, RoadmapStage,
-    RoadmapUserProgress, RoadmapUserXP,
+    RoadmapUserProgress, RoadmapUserXP,RoadmapLessonProgress
 )
 
 
@@ -50,18 +50,43 @@ def roadmap_view(request):
     for stage in stages:
         for lesson in stage.lessons.all():
             # Si la lección ya está completada, dejarla así
-            if lesson.status == 'completed':
+            # if lesson.status == 'completed':
+            #     continue
+            lesson_progress, _ = RoadmapLessonProgress.objects.get_or_create(
+                user=request.user,
+                lesson=lesson,
+                defaults={
+                    'status': 'locked'
+                }
+            )
+
+            lesson.progress = lesson_progress
+
+            if lesson_progress.status == 'completed':
                 continue
             
             # Si aún no hemos alcanzado el límite y no está completada, desbloquear
-            if lessons_unlocked < max_lessons_to_unlock:
-                lesson.status = 'available'
-                lessons_unlocked += 1
-            else:
-                # Resto de lecciones: bloquear
-                lesson.status = 'locked'
+            # if lessons_unlocked < max_lessons_to_unlock:
+            #     lesson.status = 'available'
+            #     lessons_unlocked += 1
+            # else:
+            #     # Resto de lecciones: bloquear
+            #     lesson.status = 'locked'
             
-            lesson.save()
+            # lesson.save()
+            if lessons_unlocked < max_lessons_to_unlock:
+
+                if lesson_progress.status == 'locked':
+                    lesson_progress.status = 'available'
+                    lesson_progress.save()
+
+                lessons_unlocked += 1
+
+            else:
+
+                if lesson_progress.status != 'completed':
+                    lesson_progress.status = 'locked'
+                    lesson_progress.save()
 
     if request.user.is_authenticated:
         xp_profile, _ = RoadmapUserXP.objects.get_or_create(user=request.user)
@@ -162,11 +187,15 @@ def submit_exercise_view(request, exercise_id):
         progress.solved    = True
         progress.xp_earned = xp
 
+        # Guardar antes de contar
+        progress.save()
+
         # Buscar siguiente ejercicio de la misma lección
         next_exercise = RoadmapExercise.objects.filter(
             lesson=exercise.lesson,
             order__gt=exercise.order
-        ).first()
+        ).order_by('order').first()
+        #).first()
 
         # Si existe siguiente ejercicio
         if next_exercise:
@@ -182,23 +211,64 @@ def submit_exercise_view(request, exercise_id):
 
         # Desbloquear siguiente lección si todos los ejercicios están resueltos
         lesson   = exercise.lesson
-        all_done = not RoadmapUserProgress.objects.filter(
+        total_exercises = lesson.exercises.count()
+
+        # Guardamos el progreso actual primero para que cuente en la siguiente consulta
+        #progress.save()
+
+        solved_exercises = RoadmapUserProgress.objects.filter(
             user=request.user,
             exercise__lesson=lesson,
-            solved=False,
-        ).exists()
-        if all_done:
-            lesson.status = 'completed'
-            lesson.save()
+            solved=True,
+        ).count()
+
+        # if solved_exercises == total_exercises:
+        #     lesson.status = 'completed'
+        #     lesson.save()
+
+        #     next_lesson = RoadmapLesson.objects.filter(
+        #         stage=lesson.stage,
+        #         order__gt=lesson.order,
+        #     ).order_by('order').first()
+        #     #).first()
+        #     if next_lesson and next_lesson.status == 'locked':
+        #         next_lesson.status = 'available'
+        #         next_lesson.save()
+        if solved_exercises == total_exercises:
+
+            lesson_progress, _ = RoadmapLessonProgress.objects.get_or_create(
+                user=request.user,
+                lesson=lesson,
+                defaults={
+                    'status': 'available'
+                }
+            )
+
+            lesson_progress.status = 'completed'
+            lesson_progress.completed_at = timezone.now()
+            lesson_progress.save()
+
             next_lesson = RoadmapLesson.objects.filter(
                 stage=lesson.stage,
                 order__gt=lesson.order,
-            ).first()
-            if next_lesson and next_lesson.status == 'locked':
-                next_lesson.status = 'available'
-                next_lesson.save()
+            ).order_by('order').first()
 
-    progress.save()
+            if next_lesson:
+
+                next_progress, _ = RoadmapLessonProgress.objects.get_or_create(
+                    user=request.user,
+                    lesson=next_lesson,
+                    defaults={
+                        'status': 'locked'
+                    }
+                )
+
+                if next_progress.status == 'locked':
+                    next_progress.status = 'available'
+                    next_progress.save()
+    else:
+        # Si NO pasó, guardamos el intento fallido en la BD
+        progress.save()
 
     return JsonResponse({
         'status':        'correct' if all_passed else 'incorrect',
@@ -221,6 +291,8 @@ def progress_view(request):
     - Progreso por etapa/lección
     - Actividad reciente
     """
+    initialize_user_roadmap(request.user)
+
     # ─── Obtener perfil XP ───
     xp_profile, _ = RoadmapUserXP.objects.get_or_create(user=request.user)
     
@@ -254,14 +326,30 @@ def progress_view(request):
     if attempted_exercises > 0:
         accuracy = round((first_attempt_solved / attempted_exercises) * 100)
     
-    # Lecciones completadas
-    completed_lessons = RoadmapLesson.objects.filter(
+    # NUEVO
+    completed_lessons = RoadmapLessonProgress.objects.filter(
+        user=request.user,
         status='completed'
     ).count()
+
+    # Lecciones completadas
+    # completed_lessons = RoadmapLesson.objects.filter(
+    #     status='completed'
+    # ).count()
     
     # ─── Enriquecer datos de etapas ───
     for stage in stages:
         for lesson in stage.lessons.all():
+
+            # NUEVO
+            lesson.progress, _ = RoadmapLessonProgress.objects.get_or_create(
+                user=request.user,
+                lesson=lesson,
+                defaults={
+                    'status': 'locked'
+                }
+            )
+
             # Contar ejercicios completados en esta lección
             lesson_exercises = lesson.exercises.count()
             lesson_solved = RoadmapUserProgress.objects.filter(
@@ -294,4 +382,22 @@ def progress_view(request):
     }
     return render(request, 'roadmap/progress.html', context)
 
+
+
+def initialize_user_roadmap(user):
+
+    first_lesson = RoadmapLesson.objects.order_by(
+        'stage__order',
+        'order'
+    ).first()
+
+    if first_lesson:
+
+        RoadmapLessonProgress.objects.get_or_create(
+            user=user,
+            lesson=first_lesson,
+            defaults={
+                'status': 'available'
+            }
+        )
 

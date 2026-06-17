@@ -1,0 +1,197 @@
+{% extends "roadmap/base.html" %}
+
+{% block title %}
+Detalle del Estudiante
+{% endblock %}
+
+{% block content %}
+<nav style="position:sticky;top:0;z-index:200;display:flex;align-items:center;gap:16px;
+            padding:0 24px;height:56px;background:rgba(6,9,18,0.95);
+            backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.06);">
+
+  <div style="font-family:var(--mono);font-size:.9rem;font-weight:700;color:var(--g2);
+              display:flex;align-items:center;gap:8px;">
+    <div style="width:8px;height:8px;border-radius:50%;background:var(--g2);
+                box-shadow:0 0 10px var(--g2);"></div>
+    CodePath
+  </div>
+
+  <div style="margin-left:auto;">
+    <a href="{% url 'seguimiento:index' %}"
+       style="color:var(--muted);font-size:.78rem;font-weight:700;text-decoration:none;
+              border:1px solid hsla(145, 85%, 37%, 0.747);border-radius:8px;
+              padding:5px 12px;">
+        ← Atrás
+    </a>
+  </div>
+
+</nav>
+
+<div style="max-width:1400px;margin:auto;padding:40px;">
+
+  <h1>
+    👨‍🎓
+    {{ estudiante.nombre }}
+    {{ estudiante.apellido }}
+  </h1>
+
+  <p>
+    {{ estudiante.email }}
+  </p>
+
+  <hr>
+
+  <h2>Información General</h2>
+  
+  <div>
+
+    <p>
+      <strong>Rol:</strong>
+      {{ estudiante.rol }}
+    </p>
+
+    <p style="display: flex; align-items: center; gap: 8px; margin: 8px 0;">
+        <strong>Nivel Actual:</strong>
+
+        {% if perfil %}
+            {% if perfil.nivel_actual == 1 %}
+            <span style="padding:4px 10px; border-radius:999px; background:rgba(59,130,246,.1); color:#2563eb; font-size:.85rem; font-weight:700;">
+                Principiante
+            </span>
+            {% elif perfil.nivel_actual == 2 %}
+            <span style="padding:4px 10px; border-radius:999px; background:rgba(245,158,11,.1); color:#d97706; font-size:.85rem; font-weight:700;">
+                Intermedio
+            </span>
+            {% elif perfil.nivel_actual == 3 %}
+            <span style="padding:4px 10px; border-radius:999px; background:rgba(16,185,129,.1); color:#059669; font-size:.85rem; font-weight:700;">
+                Avanzado
+            </span>            
+            {% endif %}  
+        {% endif %}        
+    </p>
+
+    <p>
+      <strong>Última Actividad:</strong>
+
+      {% if ultima_actividad %}
+        {{ ultima_actividad|date:"d/m/Y H:i" }}
+      {% else %}
+        Sin actividad
+      {% endif %}
+    </p>
+
+  </div>
+
+  <hr>
+
+  <h2>Estadísticas</h2>
+
+  <div style="
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:20px;
+      margin-bottom:30px;
+  ">
+
+    <div>
+      <h3>{{ ejercicios_resueltos }}</h3>
+      <p>Ejercicios Resueltos</p>
+    </div>
+
+    <div>
+      <h3>{{ ejercicios_pendientes }}</h3>
+      <p>Ejercicios Pendientes</p>
+    </div>
+
+    <div>
+      <h3>{{ total_intentos }}</h3>
+      <p>Total Intentos</p>
+    </div>
+
+    <div>
+      <h3>{{ precision }}%</h3>
+      <p>Precisión</p>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <h2>Actividad Reciente</h2>
+
+  <table style="width:100%;">
+
+    <thead>
+
+      <tr>
+        <th>Ejercicio</th>
+        <th>Intentos</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+      </tr>
+
+    </thead>
+
+    <tbody>
+
+      {% for progreso in progresos %}
+
+      <tr>
+
+        <td>
+          {{ progreso.exercise.title }}
+        </td>
+
+        <td>
+          {{ progreso.attempts }}
+        </td>
+
+        <td>
+
+          {% if progreso.solved %}
+            ✅ Resuelto
+          {% else %}
+            ⏳ En progreso
+          {% endif %}
+
+        </td>
+
+        <td>
+          {{ progreso.updated_at|date:"d/m/Y H:i" }}
+        </td>
+
+      </tr>
+
+      {% empty %}
+
+      <tr>
+
+        <td colspan="4">
+          No existen actividades registradas.
+        </td>
+
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+
+  <hr>
+  <a href="{% url 'seguimiento:exportar_pdf_detalle_estudiante' estudiante.id %}"
+    style="
+        display:inline-block;
+        padding:10px 18px;
+        background:#2563eb;
+        color:white;
+        text-decoration:none;
+        border-radius:8px;
+        font-weight:bold;
+    ">
+    Exportar PDF
+  </a>
+  <hr>
+</div>
+
+{% endblock %}
