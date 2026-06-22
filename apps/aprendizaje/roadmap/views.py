@@ -17,9 +17,15 @@ from .evaluator import (
 )
 from .judge0 import run_code
 from .models import (
-    RoadmapExercise, RoadmapLesson, RoadmapStage,
-    RoadmapUserProgress, RoadmapUserXP,RoadmapLessonProgress
+    RoadmapExercise, 
+    RoadmapLesson, 
+    RoadmapStage,
+    RoadmapUserProgress, 
+    RoadmapUserXP,
+    RoadmapLessonProgress
 )
+from .services.adaptive_service import ejecutar_adaptacion
+
 
 
 @login_required
@@ -65,15 +71,7 @@ def roadmap_view(request):
             if lesson_progress.status == 'completed':
                 continue
             
-            # Si aún no hemos alcanzado el límite y no está completada, desbloquear
-            # if lessons_unlocked < max_lessons_to_unlock:
-            #     lesson.status = 'available'
-            #     lessons_unlocked += 1
-            # else:
-            #     # Resto de lecciones: bloquear
-            #     lesson.status = 'locked'
             
-            # lesson.save()
             if lessons_unlocked < max_lessons_to_unlock:
 
                 if lesson_progress.status == 'locked':
@@ -182,9 +180,24 @@ def submit_exercise_view(request, exercise_id):
 
     xp = 0
     next_exercise_url = None # nuevo agregado
+
+    adaptacion = None
+    intento = None
     if all_passed:
         xp                 = calculate_score(exercise, progress.attempts, time_spent, True)
         progress.solved    = True
+        adaptacion = ejecutar_adaptacion(request.user)
+        
+        if adaptacion.get("siguiente_ejercicio"):
+
+            next_exercise_url = reverse(
+                "roadmap:exercise",
+                args=[
+                    adaptacion[
+                        "siguiente_ejercicio"
+                    ].id
+                ]
+            )
         progress.xp_earned = xp
 
         # Guardar antes de contar
@@ -270,16 +283,33 @@ def submit_exercise_view(request, exercise_id):
         # Si NO pasó, guardamos el intento fallido en la BD
         progress.save()
 
-    return JsonResponse({
-        'status':        'correct' if all_passed else 'incorrect',
-        'all_passed':    all_passed,
-        'results':       [r for r in results if not r.get('is_hidden', False)],
-        'attempts':      progress.attempts,
-        'attempts_left': max(0, exercise.max_attempts - progress.attempts),
-        'xp_earned':     xp,
-         # NUEVO
+    # Respuesta con adaptación incluida
+    response_data = {
+        'status':            'correct' if all_passed else 'incorrect',
+        'all_passed':        all_passed,
+        'results':           [r for r in results if not r.get('is_hidden', False)],
+        'attempts':          progress.attempts,
+        'attempts_left':     max(0, exercise.max_attempts - progress.attempts),
+        'xp_earned':         xp,
         'next_exercise_url': next_exercise_url,
-    })
+    }
+    
+    # Agregar adaptación solo si se resolvió correctamente
+    if adaptacion:
+        response_data["adaptacion"] = {
+            "prediccion": adaptacion["prediccion"],
+            "feedback": adaptacion["feedback"],
+            "siguiente_ejercicio":
+                adaptacion[
+                    "siguiente_ejercicio"
+                ].id
+                if adaptacion[
+                    "siguiente_ejercicio"
+                ]
+                else None
+        }
+    
+    return JsonResponse(response_data)
 
 
 @login_required
