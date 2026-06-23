@@ -188,16 +188,16 @@ def submit_exercise_view(request, exercise_id):
         progress.solved    = True
         adaptacion = ejecutar_adaptacion(request.user)
         
-        if adaptacion.get("siguiente_ejercicio"):
+        # if adaptacion.get("siguiente_ejercicio"):
 
-            next_exercise_url = reverse(
-                "roadmap:exercise",
-                args=[
-                    adaptacion[
-                        "siguiente_ejercicio"
-                    ].id
-                ]
-            )
+        #     next_exercise_url = reverse(
+        #         "roadmap:exercise",
+        #         args=[
+        #             adaptacion[
+        #                 "siguiente_ejercicio"
+        #             ].id
+        #         ]
+        #     )
         progress.xp_earned = xp
 
         # Guardar antes de contar
