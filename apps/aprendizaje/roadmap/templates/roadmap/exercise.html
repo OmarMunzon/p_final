@@ -706,7 +706,7 @@
           <div class="code-editor">
             <textarea id="code-input" placeholder="# Escribe tu solución aquí&#10;&#10;print('Hola, mundo!')" spellcheck="false">{{ starter_code }}</textarea>
           </div>
-          <button class="btn-action btn-run" onclick="runCode();">
+          <button class="btn-action btn-run" onclick="submitExercise();">
             <span>▶</span> Ejecutar código
           </button>
           <div id="output-container" style="display: none; margin-top: 12px;">
@@ -967,17 +967,27 @@ function submitExercise(){
         }
       }, 2000);
     }
-    if(data.adaptacion){
+    
+if (data.hasOwnProperty('adaptacion') || data.adaptacion !== undefined) {
+  console.log("existe variable adaptacion")
+  document.getElementById("feedback-title").innerText =
+      data.adaptacion.prediccion;
 
-        // document.getElementById("feedback-title").innerText =
-        //     data.adaptacion.prediccion;
+  document.getElementById("feedback-text").innerText =
+      data.adaptacion.feedback.accion;
 
-        // document.getElementById("feedback-text").innerText =
-        //     data.adaptacion.feedback;
-
-        // document.getElementById("feedback-modal").style.display =
-        //     "block";
-    }
+  document.getElementById("feedback-modal").style.display =
+      "block";
+  
+  setTimeout(() => {    
+    //window.location.href = data.adaptacion.siguiente_ejercicio;
+    const siguienteId = data.adaptacion.siguiente_ejercicio; // Asumiendo que vale 11
+    window.location.href = `/aprendizaje/ejercicio/${siguienteId}`;
+  }, 5000);
+}else{
+  console.log("no existe adaptacion")
+}
+    
   })
   .catch(err => {
     showResultBanner({ status: 'error', message: err.message, all_passed: false });
@@ -997,7 +1007,7 @@ function showResultBanner(data) {
       ${data.all_passed ? '🎉 ¡Correcto!'  : '❌ No es correcto' }
     </div>
     <div style="font-size: 0.85rem;">
-      ${data.message || (data.all_passed ? 'Solución enviada correctamente ' + data.adaptacion.prediccion + " " +data.adaptacion.feedback.accion : 'Verifica tu respuesta e intenta de nuevo' )}
+      ${data.message || (data.all_passed ? 'Solución enviada correctamente '  : 'Verifica tu respuesta e intenta de nuevo' )}
     </div>
   `;
   document.body.appendChild(banner);

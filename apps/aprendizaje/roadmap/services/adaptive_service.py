@@ -2,15 +2,14 @@ from apps.modelo.predictor import recomendar
 from apps.modelo.feedback import generar_feedback
 
 from apps.aprendizaje.roadmap.models import (
-    #RoadmapExerciseAttempt,
+    RoadmapExerciseAttempt,
     RoadmapUserProgress,    
     RoadmapLessonProgress,
     RoadmapExercise,
 )
 
 
-def obtener_siguiente_ejercicio(usuario, prediccion):
-
+def obtener_siguiente_ejercicio(usuario, prediccion):    
     mapa_dificultad = {
         "Reforzar": "easy",
         "Mantener": "medium",
@@ -75,11 +74,11 @@ def calcular_estadisticas(usuario):
         for p in progresos
     )
 
-    intentos_promedio = (
-        intentos_totales / ejercicios_resueltos
-        if ejercicios_resueltos
-        else 0
-    )
+    # intentos_promedio = (
+    #     intentos_totales / ejercicios_resueltos
+    #     if ejercicios_resueltos
+    #     else 0
+    # )
     
     tiempo_promedio = (
         sum(p.time_spent for p in progresos)
@@ -114,13 +113,13 @@ def calcular_estadisticas(usuario):
             porcentaje_aciertos,
 
         "intentos_promedio":
-            intentos_promedio,
+            3,
 
         "tiempo_promedio_seg":
             tiempo_promedio,
 
-        "errores_consecutivos": 0,
-           # calcular_errores_consecutivos(usuario),
+        "errores_consecutivos":
+           calcular_errores_leccion_actual(usuario),
 
         "xp_acumulada":
             xp,
@@ -149,20 +148,20 @@ def ejecutar_adaptacion(usuario):
         print(type(e))
         print(e)
         raise
-    
+
     prediccion = recomendar(
-        edad=datos["edad"],
-        curso=datos["curso"],
+        # edad=datos["edad"],
+        # curso=datos["curso"],
         nivel_diagnostico=datos["nivel_diagnostico"],
-        tema_actual=datos["tema_actual"],
+        # tema_actual=datos["tema_actual"],
         ejercicios_resueltos=datos["ejercicios_resueltos"],
         porcentaje_aciertos=datos["porcentaje_aciertos"],
         intentos_promedio=datos["intentos_promedio"],
-        tiempo_promedio_seg=datos["tiempo_promedio_seg"],
+        # tiempo_promedio_seg=datos["tiempo_promedio_seg"],
         errores_consecutivos=datos["errores_consecutivos"],
         xp_acumulada=datos["xp_acumulada"],
         lecciones_completadas=datos["lecciones_completadas"],
-        dias_inactividad=datos["dias_inactividad"]
+        # dias_inactividad=datos["dias_inactividad"]
     )
 
     feedback = generar_feedback(
@@ -184,21 +183,51 @@ def ejecutar_adaptacion(usuario):
     }
    
 
-# def calcular_errores_consecutivos(usuario):
+def calcular_errores_consecutivos(usuario):
 
-#     intentos = (
-#         RoadmapExerciseAttempt.objects
-#         .filter(user=usuario)
-#         .order_by("-created_at")
-#     )
+    intentos = (
+        RoadmapExerciseAttempt.objects
+        .filter(user=usuario)
+        .order_by("-created_at")
+    )
 
-#     errores = 0
+    errores = 0
 
-#     for intento in intentos:
+    for intento in intentos:
 
-#         if intento.is_correct:
-#             break
+        if intento.is_correct:
+            break
 
-#         errores += 1
+        errores += 1
 
-#     return errores
+    return errores
+
+def calcular_errores_leccion_actual(usuario):
+    # 1. Obtenemos el último intento realizado por el usuario
+    ultimo_intento = (
+        RoadmapExerciseAttempt.objects
+        .filter(user=usuario)
+        .order_by("-created_at")
+        .first()
+    )
+
+    # Si el usuario no ha intentado ningún ejercicio, sus errores son 0
+    if not ultimo_intento:
+        return 0
+
+    # 2. Identificamos la lección actual a través de ese último ejercicio
+    # (Asumiendo que 'exercise' tiene una relación con la lección mediante 'lesson_id' o 'lesson')
+    leccion_actual_id = ultimo_intento.exercise.lesson_id
+
+    # 3. Contamos todos los errores del usuario dentro de los ejercicios de esa lección
+    errores_leccion_actual = (
+        RoadmapExerciseAttempt.objects
+        .filter(
+            user=usuario,
+            is_correct=False,
+            exercise__lesson_id=leccion_actual_id  # Filtra los ejercicios que comparten esta lección
+        )
+        .count()
+    )
+
+    return errores_leccion_actual

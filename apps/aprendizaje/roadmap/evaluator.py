@@ -5,20 +5,60 @@ def evaluate_code(exercise, user_code):
     print("Evaluando código del ejercicio:", exercise.title)
     print("Código del usuario:\n", user_code)
     results = []
+
     for tc in exercise.test_cases.all():
-        full = f'{user_code}\n\nprint({tc.input_data})'
-        r    = run_code(full, language='python')
-        out  = r['stdout'].strip()
-        ok   = r['accepted'] and out == tc.expected.strip()
+
         results.append({
-            'description': tc.description,
-            'expected':    tc.expected,
-            'output':      out if r['accepted'] else r['stderr'].strip(),
-            'passed':      ok,
-            'is_hidden':   tc.is_hidden,
-            'exec_time':   r.get('time'),
-            'status':      r['status'],
+
+            "description": tc.description,
+
+            "expected": tc.expected,
+
+            "output": "La evaluación automática está deshabilitada.",
+
+            "passed": False,
+
+            "is_hidden": tc.is_hidden,
+
+            "exec_time": None,
+
+            "status": "No evaluado"
+
         })
+
+    if not results:
+        results.append({
+
+            "description": "Evaluación",
+
+            "expected": "",
+
+            "output": "La evaluación automática está deshabilitada.",
+
+            "passed": False,
+
+            "is_hidden": False,
+
+            "exec_time": None,
+
+            "status": "No evaluado"
+
+        })
+    # for tc in exercise.test_cases.all():
+    #     full = f'{user_code}\n\nprint({tc.input_data})'
+    #     r    = run_code(full, language='python')
+    #     out  = r['stdout'].strip()
+    #     ok   = r['accepted'] and out == tc.expected.strip()
+    #     results.append({
+    #         'description': tc.description,
+    #         'expected':    tc.expected,
+    #         'output':      out if r['accepted'] else r['stderr'].strip(),
+    #         'passed':      ok,
+    #         'is_hidden':   tc.is_hidden,
+    #         'exec_time':   r.get('time'),
+    #         'status':      r['status'],
+    #     })
+
     return results
 
 

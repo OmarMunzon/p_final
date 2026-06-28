@@ -4,7 +4,7 @@ def generar_feedback(prediccion):
 
         return {
             "mensaje":
-                "Necesitas reforzar este tema.",
+                "Necesitas reforzar esta leccion.",
             "accion":
                 "Mostrar ejercicios básicos"
         }

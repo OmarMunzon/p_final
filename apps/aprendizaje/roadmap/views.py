@@ -22,7 +22,8 @@ from .models import (
     RoadmapStage,
     RoadmapUserProgress, 
     RoadmapUserXP,
-    RoadmapLessonProgress
+    RoadmapLessonProgress,
+    RoadmapExerciseAttempt
 )
 from .services.adaptive_service import ejecutar_adaptacion
 
@@ -186,18 +187,7 @@ def submit_exercise_view(request, exercise_id):
     if all_passed:
         xp                 = calculate_score(exercise, progress.attempts, time_spent, True)
         progress.solved    = True
-        adaptacion = ejecutar_adaptacion(request.user)
         
-        # if adaptacion.get("siguiente_ejercicio"):
-
-        #     next_exercise_url = reverse(
-        #         "roadmap:exercise",
-        #         args=[
-        #             adaptacion[
-        #                 "siguiente_ejercicio"
-        #             ].id
-        #         ]
-        #     )
         progress.xp_earned = xp
 
         # Guardar antes de contar
@@ -208,7 +198,7 @@ def submit_exercise_view(request, exercise_id):
             lesson=exercise.lesson,
             order__gt=exercise.order
         ).order_by('order').first()
-        #).first()
+        
 
         # Si existe siguiente ejercicio
         if next_exercise:
@@ -226,8 +216,6 @@ def submit_exercise_view(request, exercise_id):
         lesson   = exercise.lesson
         total_exercises = lesson.exercises.count()
 
-        # Guardamos el progreso actual primero para que cuente en la siguiente consulta
-        #progress.save()
 
         solved_exercises = RoadmapUserProgress.objects.filter(
             user=request.user,
@@ -235,18 +223,7 @@ def submit_exercise_view(request, exercise_id):
             solved=True,
         ).count()
 
-        # if solved_exercises == total_exercises:
-        #     lesson.status = 'completed'
-        #     lesson.save()
-
-        #     next_lesson = RoadmapLesson.objects.filter(
-        #         stage=lesson.stage,
-        #         order__gt=lesson.order,
-        #     ).order_by('order').first()
-        #     #).first()
-        #     if next_lesson and next_lesson.status == 'locked':
-        #         next_lesson.status = 'available'
-        #         next_lesson.save()
+        
         if solved_exercises == total_exercises:
 
             lesson_progress, _ = RoadmapLessonProgress.objects.get_or_create(
@@ -260,6 +237,9 @@ def submit_exercise_view(request, exercise_id):
             lesson_progress.status = 'completed'
             lesson_progress.completed_at = timezone.now()
             lesson_progress.save()
+
+             # Ejecutar al terminar la lección
+            adaptacion = ejecutar_adaptacion(request.user)
 
             next_lesson = RoadmapLesson.objects.filter(
                 stage=lesson.stage,
@@ -282,6 +262,13 @@ def submit_exercise_view(request, exercise_id):
     else:
         # Si NO pasó, guardamos el intento fallido en la BD
         progress.save()
+
+    intento = RoadmapExerciseAttempt(
+        user=request.user,
+        exercise=exercise,
+        is_correct=all_passed  # Si all_passed es True, guarda True. Si es False, guarda False.
+    )
+    intento.save()
 
     # Respuesta con adaptación incluida
     response_data = {
@@ -308,7 +295,7 @@ def submit_exercise_view(request, exercise_id):
                 ]
                 else None
         }
-    
+    print("response_data:",response_data)
     return JsonResponse(response_data)
 
 

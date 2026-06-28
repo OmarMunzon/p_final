@@ -224,3 +224,24 @@ class RoadmapLessonProgress(models.Model):
             'user',
             'lesson'
         )
+
+
+
+
+class RoadmapExerciseAttempt(models.Model):
+  
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+    ) 
+
+    exercise = models.ForeignKey(
+        RoadmapExercise,
+        on_delete=models.CASCADE
+    )
+
+    is_correct = models.BooleanField()
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
