@@ -960,13 +960,13 @@ function submitExercise(){
   .then(data => {
     console.log(data)
     showResultBanner(data);
-    if (data.all_passed) {
-      setTimeout(() => {
-        if (data.next_exercise_url) {
-          window.location.href = data.next_exercise_url;
-        }
-      }, 2000);
-    }
+    // if (data.all_passed) {
+    //   setTimeout(() => {
+    //     if (data.next_exercise_url) {
+    //       window.location.href = data.next_exercise_url;
+    //     }
+    //   }, 2000);
+    // }
     
 if (data.hasOwnProperty('adaptacion') || data.adaptacion !== undefined) {
   console.log("existe variable adaptacion")
